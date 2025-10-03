@@ -1,0 +1,67 @@
+.ui.main-menu .header.item.title {
+	font-size: 20px;
+}
+
+.ui.main-menu img {
+	border-right: 1px solid darkgrey;
+	padding-right: 10px;
+	margin-right: 15px !important;
+}
+
+.ui.inverted.menu .item:before {
+	background-color: inherit;
+}
+
+.ui.main-menu .item:first-child {
+	padding: 1em 1em 1em 0.5em;
+}
+
+.ui.main-menu .item {
+	padding: 1em;
+}
+
+.ui.main-menu .item a {
+	color: white;
+}
+
+.milestone-choice {
+	margin-top: 16em;
+}
+
+.create-milestone {
+	text-align: right;
+}
+
+.importing {
+	padding-top: 5em;
+	padding-bottom: 20em;
+}
+.pr-title {
+	font-weight: bold;
+	font-size: 1.1em;
+}
+.ui.piled.segment.commits {
+	margin: 1em 0;
+	margin-left: 4em;
+	margin-bottom: 0;
+}
+.button.clipboard, .button.issues {
+	position: relative;
+}
+.ui.compact.icon.button, .ui.compact.icon.buttons .button {
+	padding: 0.4em 0.4em 0.4em;
+}
+.multi-commit {
+	padding-top: 0.2em;
+}
+
+.message.blue a {
+	text-decoration: underline;
+}
+
+hr {
+	border: none;
+	height: 1px;
+	background: linear-gradient(to right, transparent, rgba(0,0,0,0.2), transparent);
+	margin: 1.5em 0;
+}

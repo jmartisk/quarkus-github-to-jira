@@ -1,0 +1,53 @@
+{#include GithubToJiraResource/base}
+    {#page-class}importing{/page-class}
+    {#title}Quarkus Github to JIRA import{/title}
+    {#body}
+        <h2>Pull requests to import</h2>
+        {!<div class="ui icon message blue small">!}
+            {!<i class="question circle outline icon"></i>!}
+            {!<div class="content">!}
+                {!<p>We list here the <a target="_blank" href="{pullRequestsForBackportLabelUrl}">pull requests considered for backporting</a>.</p>!}
+                {!<p>Use the cherry-pick button to copy the cherry-pick command, run it, and then mark the pull request as backported once done.</p>!}
+            {!</div>!}
+        {!</div>!}
+        <table class="ui celled striped table">
+            <thead>
+            <tr>
+                <th class="one wide" style="width:10px; text-align:right">#</th>
+                <th class="thirteen wide">Title</th>
+                <th class="one wide">Cherry&nbsp;Pick</th>
+                <th class="one wide">Done</th>
+            </tr>
+            </thead>
+            <tbody>
+            {#for pr in pullRequests}
+                <tr>
+                    <td>
+                        <a href="{pr.url}" target="_blank">#{pr.number}</a>
+                    </td>
+                    <td>
+                        <span>{pr.title}</span>
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+            {#else}
+                <tr>
+                    <td colspan="3">
+                        Nothing to import.
+                    </td>
+                </tr>
+            {/for}
+            </tbody>
+        </table>
+    {/body}
+    {#scripts}
+        <script type="text/javascript">
+
+        </script>
+    {/scripts}
+{/include}
