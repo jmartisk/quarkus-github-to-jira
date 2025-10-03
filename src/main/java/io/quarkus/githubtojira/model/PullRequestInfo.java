@@ -5,6 +5,7 @@ public class PullRequestInfo {
     private String url;
     private String title;
     private Integer number;
+    private JiraInfo existingJira;
 
     public String getUrl() {
         return url;
@@ -30,6 +31,13 @@ public class PullRequestInfo {
         this.number = number;
     }
 
+    public JiraInfo getExistingJira() {
+        return existingJira;
+    }
+
+    public void setExistingJira(JiraInfo existingJira) {
+        this.existingJira = existingJira;
+    }
 
     @Override
     public String toString() {
@@ -37,6 +45,7 @@ public class PullRequestInfo {
                 "url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 ", number=" + number +
+                ", existingJira=" + existingJira +
                 '}';
     }
 }

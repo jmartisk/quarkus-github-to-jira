@@ -1,5 +1,6 @@
 package io.quarkus.githubtojira;
 
+import io.quarkus.githubtojira.model.JiraInfo;
 import io.quarkus.githubtojira.model.ProjectInfo;
 import io.quarkus.githubtojira.model.PullRequestInfo;
 import io.quarkus.qute.CheckedTemplate;
@@ -22,6 +23,8 @@ public class GithubToJiraResource {
 
     // used to filter the project names to only get projects related to backports
     private static Pattern projectNamePattern = Pattern.compile("Backports.+");
+    @Inject
+    JiraService jiraService;
 
     @CheckedTemplate
     public static class Templates {
@@ -47,6 +50,11 @@ public class GithubToJiraResource {
     @Path("/importing/{projectNumber}/{fixVersion}")
     public TemplateInstance importing(Integer projectNumber, String fixVersion) throws Exception {
         List<PullRequestInfo> pullRequests = gitHubService.getPullRequestsBackportedToVersion(projectNumber, fixVersion);
+        for(PullRequestInfo pr : pullRequests) {
+            JiraInfo existingJira = jiraService.findExistingJiraForPullRequest(pr.getUrl(),
+                    jiraService.fixVersionToJiraVersion(fixVersion));
+            pr.setExistingJira(existingJira);
+        }
         return Templates.importing(projectNumber, fixVersion, pullRequests);
     }
 

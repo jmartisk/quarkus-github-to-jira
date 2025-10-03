@@ -3,20 +3,19 @@
     {#title}Quarkus Github to JIRA import{/title}
     {#body}
         <h2>Pull requests to import</h2>
-        {!<div class="ui icon message blue small">!}
-            {!<i class="question circle outline icon"></i>!}
-            {!<div class="content">!}
-                {!<p>We list here the <a target="_blank" href="{pullRequestsForBackportLabelUrl}">pull requests considered for backporting</a>.</p>!}
-                {!<p>Use the cherry-pick button to copy the cherry-pick command, run it, and then mark the pull request as backported once done.</p>!}
-            {!</div>!}
-        {!</div>!}
+        <ul>
+            <li>Data comes from this project: <a href="https://github.com/orgs/quarkusio/projects/{projectNumber}">https://github.com/orgs/quarkusio/projects/{projectNumber}</a></li>
+            <li>Limiting to PRs in the {fixVersion} column</li>
+            <li>When searching for already existing JIRAs, assuming
+                they have the <a href="https://issues.redhat.com/issues/?jql=project%20%3D%20QUARKUS%20AND%20fixVersion%20%3D%20{fixVersion}.GA">{fixVersion}.GA</a> fix version</li>
+        </ul>
         <table class="ui celled striped table">
             <thead>
             <tr>
-                <th class="one wide" style="width:10px; text-align:right">#</th>
+                <th class="one wide" style="width:10px; text-align:right">PR #</th>
                 <th class="thirteen wide">Title</th>
-                <th class="one wide">Cherry&nbsp;Pick</th>
-                <th class="one wide">Done</th>
+                <th class="one wide">Existing JIRA</th>
+                <th class="one wide">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -29,7 +28,11 @@
                         <span>{pr.title}</span>
                     </td>
                     <td>
-
+                        {#if pr.existingJira != null}
+                            <a href="{pr.existingJira.url}" target="_blank">{pr.existingJira.key}</a>
+                        {#else}
+                            None found
+                        {/if}
                     </td>
                     <td>
 
