@@ -13,6 +13,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @ApplicationScoped
@@ -38,19 +41,20 @@ public class JiraService {
                 builder -> builder.setHeader("Authorization", "Bearer " + jiraToken));
     }
 
-    public JiraInfo findExistingJiraForPullRequest(String prUrl, String fixVersion) throws Exception {
+    public List<JiraInfo> findExistingJirasForPullRequest(String prUrl, String fixVersion) throws Exception {
         SearchResult searchResult = client.getSearchClient().searchJql("project = " + jiraProject + " " +
                 "and fixVersion in (\"" + fixVersion + "\") " +
                 "and \"Git Pull Request\" ~ \"" + prUrl + "\"").get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        if (searchResult.getTotal() > 0) {
-            Issue issue = searchResult.getIssues().iterator().next();
+        List<JiraInfo> result = new ArrayList<>();
+        Iterator<Issue> iterator = searchResult.getIssues().iterator();
+        while(iterator.hasNext()) {
+            Issue issue = iterator.next();
             JiraInfo jiraInfo = new JiraInfo();
             jiraInfo.setKey(issue.getKey());
             jiraInfo.setUrl(jiraServer + "/browse/" + issue.getKey());
-            return jiraInfo;
-        } else {
-            return null;
+            result.add(jiraInfo);
         }
+        return result;
     }
 
     // Convert a Quarkus version to a value of the fixVersion field in Jira

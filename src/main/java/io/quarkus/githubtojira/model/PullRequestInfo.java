@@ -1,11 +1,13 @@
 package io.quarkus.githubtojira.model;
 
+import java.util.List;
+
 public class PullRequestInfo {
 
     private String url;
     private String title;
     private Integer number;
-    private JiraInfo existingJira;
+    private List<JiraInfo> existingJiras;
 
     public String getUrl() {
         return url;
@@ -31,12 +33,12 @@ public class PullRequestInfo {
         this.number = number;
     }
 
-    public JiraInfo getExistingJira() {
-        return existingJira;
+    public List<JiraInfo> getExistingJiras() {
+        return existingJiras;
     }
 
-    public void setExistingJira(JiraInfo existingJira) {
-        this.existingJira = existingJira;
+    public void setExistingJiras(List<JiraInfo> existingJiras) {
+        this.existingJiras = existingJiras;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class PullRequestInfo {
                 "url='" + url + '\'' +
                 ", title='" + title + '\'' +
                 ", number=" + number +
-                ", existingJira=" + existingJira +
+                ", existingJiras=" + existingJiras +
                 '}';
     }
 }

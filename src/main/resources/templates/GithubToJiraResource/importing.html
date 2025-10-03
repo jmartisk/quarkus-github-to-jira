@@ -14,8 +14,8 @@
             <tr>
                 <th class="one wide" style="width:10px; text-align:right">PR #</th>
                 <th class="thirteen wide">Title</th>
-                <th class="one wide">Existing JIRA</th>
-                <th class="one wide">Action</th>
+                <th class="one wide">Existing JIRA(s)</th>
+                <th class="two wide">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -28,14 +28,58 @@
                         <span>{pr.title}</span>
                     </td>
                     <td>
-                        {#if pr.existingJira != null}
-                            <a href="{pr.existingJira.url}" target="_blank">{pr.existingJira.key}</a>
+                        {#if pr.existingJiras.size > 0}
+                            {#for jira in pr.existingJiras}
+                                <a href="{jira.url}" target="_blank">{jira.key}</a>
+                            {/for}
                         {#else}
                             None found
                         {/if}
                     </td>
-                    <td>
+                    <td class="center aligned">
+                        {#if pr.existingJiras.size == 0}
+                            <div class="ui icon button blue" id="create-as-bug-{pr.number}" title="Create as a bug">
+                                <i class="bug icon"></i>
+                            </div>
+                            <div class="ui icon button blue" id="create-as-upgrade-{pr.number}" title="Create as a component upgrade">
+                                <i class="upload icon"></i>
+                            </div>
+                            <span id="created-jira-{pr.number}"></span>
+                            <script type="text/javascript">
+                                $('#create-as-bug-{pr.number}').click(function () {
+                                    $('#create-as-bug-{pr.number}').prop("onclick", null).off("click");
+                                    $('#create-as-bug-{pr.number}').addClass('loading').removeClass('blue');
 
+                                    $.ajax('/import/' + encodeURIComponent("{pr.url}") + '/' + encodeURIComponent("{pr.title}") + '/' + encodeURIComponent("{fixVersion}") + '/bug')
+                                        .done(function (f) {
+                                            $('#create-as-bug-{pr.number}').removeClass('loading').addClass('positive disabled');
+                                            $('#create-as-bug-{pr.number} i').removeClass('bug').addClass('check');
+                                            $('#create-as-bug-{pr.number}').closest('tr').addClass('positive');
+                                            $('#created-jira-{pr.number}').html("Created: <a href=" + f + ">" + f.substring(f.lastIndexOf('/') + 1) + "</a>");
+                                        }).fail(function () {
+                                        $('#create-as-bug-{pr.number}').removeClass('loading').addClass('negative disabled');
+                                        $('#create-as-bug-{pr.number} i').removeClass('reply').addClass('exclamation triangle');
+                                    });
+                                });
+                                $('#create-as-upgrade-{pr.number}').click(function () {
+                                    $('#create-as-upgrade-{pr.number}').prop("onclick", null).off("click");
+                                    $('#create-as-upgrade-{pr.number}').addClass('loading').removeClass('blue');
+
+                                    $.ajax('/import/' + encodeURIComponent("{pr.url}") + '/' + encodeURIComponent("{pr.title}") + '/' + encodeURIComponent("{fixVersion}") + '/upgrade')
+                                        .done(function (f) {
+                                            $('#create-as-upgrade-{pr.number}').removeClass('loading').addClass('positive disabled');
+                                            $('#create-as-upgrade-{pr.number} i').removeClass('upload').addClass('check');
+                                            $('#create-as-upgrade-{pr.number}').closest('tr').addClass('positive');
+                                            $('#created-jira-{pr.number}').html("Created: <a href=" + f + ">" + f.substring(f.lastIndexOf('/') + 1) + "</a>");
+                                        }).fail(function () {
+                                        $('#create-as-upgrade-{pr.number}').removeClass('loading').addClass('negative disabled');
+                                        $('#create-as-upgrade-{pr.number} i').removeClass('reply').addClass('exclamation triangle');
+                                    });
+                                });
+                            </script>
+                        {#else}
+                            <span>No action required</span>
+                        {/if}
                     </td>
                 </tr>
             {#else}
