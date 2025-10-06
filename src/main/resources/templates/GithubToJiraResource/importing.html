@@ -50,7 +50,7 @@
                                     $('#create-as-bug-{pr.number}').prop("onclick", null).off("click");
                                     $('#create-as-bug-{pr.number}').addClass('loading').removeClass('blue');
 
-                                    $.ajax('/import/' + encodeURIComponent("{pr.url}") + '/' + encodeURIComponent("{pr.title}") + '/' + encodeURIComponent("{fixVersion}") + '/bug')
+                                    $.ajax('/import/' + encodeURIComponent("{pr.number}") + '/' + encodeURIComponent("{fixVersion}") + '/bug')
                                         .done(function (f) {
                                             $('#create-as-bug-{pr.number}').removeClass('loading').addClass('positive disabled');
                                             $('#create-as-bug-{pr.number} i').removeClass('bug').addClass('check');
@@ -59,13 +59,14 @@
                                         }).fail(function () {
                                         $('#create-as-bug-{pr.number}').removeClass('loading').addClass('negative disabled');
                                         $('#create-as-bug-{pr.number} i').removeClass('reply').addClass('exclamation triangle');
+                                        $('#created-jira-{pr.number}').html("Error, please check server logs");
                                     });
                                 });
                                 $('#create-as-upgrade-{pr.number}').click(function () {
                                     $('#create-as-upgrade-{pr.number}').prop("onclick", null).off("click");
                                     $('#create-as-upgrade-{pr.number}').addClass('loading').removeClass('blue');
 
-                                    $.ajax('/import/' + encodeURIComponent("{pr.url}") + '/' + encodeURIComponent("{pr.title}") + '/' + encodeURIComponent("{fixVersion}") + '/upgrade')
+                                    $.ajax('/import/' + encodeURIComponent("{pr.number}") + '/' + encodeURIComponent("{fixVersion}") + '/upgrade')
                                         .done(function (f) {
                                             $('#create-as-upgrade-{pr.number}').removeClass('loading').addClass('positive disabled');
                                             $('#create-as-upgrade-{pr.number} i').removeClass('upload').addClass('check');
@@ -74,6 +75,7 @@
                                         }).fail(function () {
                                         $('#create-as-upgrade-{pr.number}').removeClass('loading').addClass('negative disabled');
                                         $('#create-as-upgrade-{pr.number} i').removeClass('reply').addClass('exclamation triangle');
+                                        $('#created-jira-{pr.number}').html("Error, please check server logs");
                                     });
                                 });
                             </script>

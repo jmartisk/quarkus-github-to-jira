@@ -7,18 +7,21 @@ import io.quarkus.logging.Log;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import io.smallrye.common.annotation.Blocking;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 @Path("/")
+@ApplicationScoped
 public class GithubToJiraResource {
 
     @Inject
@@ -30,8 +33,7 @@ public class GithubToJiraResource {
     @Inject
     JiraService jiraService;
 
-    @ConfigProperty(name = "dry-run")
-    Boolean dryRun;
+    private final Map<Integer, PullRequestInfo> pullRequestCache = new HashMap<>();
 
     @CheckedTemplate
     public static class Templates {
@@ -57,20 +59,33 @@ public class GithubToJiraResource {
     @Path("/importing/{projectNumber}/{fixVersion}")
     public TemplateInstance importing(Integer projectNumber, String fixVersion) throws Exception {
         List<PullRequestInfo> pullRequests = gitHubService.getPullRequestsBackportedToVersion(projectNumber, fixVersion);
-        for(PullRequestInfo pr : pullRequests) {
-            List<JiraInfo> existingJiras = jiraService.findExistingJirasForPullRequest(pr.getUrl(),
+        if (!pullRequests.isEmpty()) {
+            List<JiraInfo> jiras = jiraService.findExistingJirasForPullRequests(
+                    pullRequests.stream().map(PullRequestInfo::getUrl).toList(),
                     jiraService.fixVersionToJiraVersion(fixVersion));
-            pr.setExistingJiras(existingJiras);
+            for (PullRequestInfo pullRequest : pullRequests) {
+                pullRequest.setExistingJiras(new ArrayList<>());
+                jiras.stream().filter(jira -> jira.getGitPullRequestUrls().contains(pullRequest.getUrl()))
+                        .findFirst().ifPresent(jira -> {
+                            Log.info("Linking existing jira " + jira.getUrl() + " to PR " + pullRequest.getUrl());
+                            pullRequest.getExistingJiras().add(jira);
+                        });
+            }
         }
+        pullRequests.forEach(pr -> {
+            pullRequestCache.put(pr.getNumber(), pr);
+        });
         return Templates.importing(projectNumber, fixVersion, pullRequests);
     }
 
     @GET
-    @Path("/import/{prUrl}/{prTitle}/{fixVersion}/{type}")
-    public String performImport(String prUrl, String prTitle, String fixVersion, String type) throws InterruptedException {
-        Log.info("Importing: " + prUrl + " " + prTitle + " " + fixVersion + " as: " + type);
-        TimeUnit.SECONDS.sleep(1);
-        return "https://example.com/jira/ISSUE-1";
+    @Path("/import/{prNumber}/{fixVersion}/{type}")
+    public String performImport(Integer prNumber, String fixVersion, String type) throws Exception {
+        PullRequestInfo pr = pullRequestCache.get(prNumber);
+        if (pr == null) {
+            throw new IllegalArgumentException("No PR with number " + prNumber + " found in the cache");
+        }
+        return jiraService.createJira(pr.getUrl(), pr.getTitle(), jiraService.fixVersionToJiraVersion(fixVersion), type, pr.getDescription());
     }
 
 }

@@ -99,6 +99,7 @@ public class GitHubService {
                               url
                               title
                               number
+                              bodyText
                             }
                           }
                         }
@@ -124,6 +125,7 @@ public class GitHubService {
                     prInfo.setUrl(pullRequest.asJsonObject().getJsonObject("content").getString("url"));
                     prInfo.setTitle(pullRequest.asJsonObject().getJsonObject("content").getString("title"));
                     prInfo.setNumber(pullRequest.asJsonObject().getJsonObject("content").getInt("number"));
+                    prInfo.setDescription(pullRequest.asJsonObject().getJsonObject("content").getString("bodyText"));
                     Log.info("Found pull request: " + prInfo);
                     list.add(prInfo);
                 }

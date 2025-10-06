@@ -8,6 +8,7 @@ public class PullRequestInfo {
     private String title;
     private Integer number;
     private List<JiraInfo> existingJiras;
+    private String description;
 
     public String getUrl() {
         return url;
@@ -39,6 +40,14 @@ public class PullRequestInfo {
 
     public void setExistingJiras(List<JiraInfo> existingJiras) {
         this.existingJiras = existingJiras;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
